@@ -15,8 +15,7 @@ This project demonstrates the integration of AI capabilities within a Spring Boo
 
 - [Architecture](#architecture)
 - [Running the Application](#running-the-application)
-- [Modules Overview](#modules-overview)
-- [Dependencies](#dependencies)
+- [Articles](#articles)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -30,11 +29,29 @@ The architecture is designed to be modular and scalable, focusing on demonstrati
 
 ## Running the Application
 
-Follow these steps to run the application locally:
+Follow these steps to run the application locally. 
+```bash
+git clone https://github.com/piomin/spring-ai-showcase.git
+cd spring-ai-showcase
+```
 
+By default, this sample Spring AI app connects to OpenAI. So, before running the app you must set a token:
+```shell
+export OPEN_AI_TOKEN=<YOUR_API_TOKEN>
+mvn spring-boot:run
+```
 
-   ```bash
-   git clone https://github.com/piomin/spring-ai-showcase.git
-   cd spring-ai-showcase
-   mvn spring-boot:run
-   ```
+To enable integration with Mistral, we should activate the `mistral-ai` profile: 
+```shell
+export MISTRAL_AI_TOKEN=<YOUR_API_TOKEN>
+mvn spring-boot:run -Pmistral-ai
+```
+
+To enable integration with Ollama, we should activate the `ollama-ai` profile:
+```shell
+mvn spring-boot:run -Pollama-ai
+```
+
+# Articles
+1. Getting started with Spring AI **Chat Model** and easily switch between different AI providers including **OpenAI**, **Mistral AI** and **Ollama**. The example is available in the branch [master](https://github.com/piomin/spring-ai-showcase/tree/master). A detailed guide may be found in the following article: [Getting Started with Spring AI and Chat Model](https://piotrminkowski.com/2025/01/28/getting-started-with-spring-ai-and-chat-model)
+
