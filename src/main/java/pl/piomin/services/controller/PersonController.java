@@ -22,7 +22,8 @@ public class PersonController {
 
     private final ChatClient chatClient;
 
-    public PersonController(ChatClient.Builder chatClientBuilder, ChatMemory chatMemory) {
+    public PersonController(ChatClient.Builder chatClientBuilder,
+                            ChatMemory chatMemory) {
         this.chatClient = chatClientBuilder
                 .defaultAdvisors(
                         new PromptChatMemoryAdvisor(chatMemory),
@@ -33,8 +34,8 @@ public class PersonController {
     @GetMapping
     List<Person> findAll() {
         PromptTemplate pt = new PromptTemplate("""
-                Return the current a list of 10 persons if exists or generate a new list with random values with basic info about them in separated fields.
-                Additionally each object in the list should contain an auto-incremented id field.
+                Return a current list of 10 persons if exists or generate a new list with random values.
+                Each object should contain an auto-incremented id field.
                 Do not include any explanations or additional text.
                 """);
 
