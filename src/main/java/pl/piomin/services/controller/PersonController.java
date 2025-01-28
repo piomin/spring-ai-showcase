@@ -36,6 +36,7 @@ public class PersonController {
         PromptTemplate pt = new PromptTemplate("""
                 Return a current list of 10 persons if exists or generate a new list with random values.
                 Each object should contain an auto-incremented id field.
+                The age value should be a random number between 18 and 99.
                 Do not include any explanations or additional text.
                 """);
 
