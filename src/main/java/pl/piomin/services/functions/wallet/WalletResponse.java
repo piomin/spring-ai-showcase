@@ -1,6 +1,6 @@
 package pl.piomin.services.functions.wallet;
 
-import java.util.Map;
+import java.util.List;
 
-public record WalletResponse(Map<String, Integer> shares) {
+public record WalletResponse(List<Share> shares) {
 }

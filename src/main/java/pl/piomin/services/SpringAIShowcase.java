@@ -9,6 +9,7 @@ import org.springframework.web.client.RestTemplate;
 import pl.piomin.services.functions.stock.StockRequest;
 import pl.piomin.services.functions.stock.StockResponse;
 import pl.piomin.services.functions.stock.StockService;
+import pl.piomin.services.functions.wallet.WalletRepository;
 import pl.piomin.services.functions.wallet.WalletResponse;
 import pl.piomin.services.functions.wallet.WalletService;
 
@@ -29,8 +30,8 @@ public class SpringAIShowcase {
 
     @Bean
     @Description("Number of shares for each company in my portfolio")
-    public Supplier<WalletResponse> numberOfShares() {
-        return new WalletService();
+    public Supplier<WalletResponse> numberOfShares(WalletRepository walletRepository) {
+        return new WalletService(walletRepository);
     }
 
     @Bean
