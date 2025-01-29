@@ -24,7 +24,7 @@ public class WalletController {
     @GetMapping
     String calculateWalletValue() {
         PromptTemplate pt = new PromptTemplate("""
-        What’s the current value of my wallet based on the latest stock daily prices in '4. close' field from the latest time series ?
+        What’s the current value in $ of my wallet based on the latest stock daily prices ?
         """);
 
         return this.chatClient.prompt(pt.create(

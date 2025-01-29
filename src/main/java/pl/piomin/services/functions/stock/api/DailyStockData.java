@@ -3,22 +3,33 @@ package pl.piomin.services.functions.stock.api;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class DailyStockData {
-    @JsonProperty("1. open")
+    @JsonProperty("datetime")
+    private String datetime;
+
+    @JsonProperty("open")
     private String open;
 
-    @JsonProperty("2. high")
+    @JsonProperty("high")
     private String high;
 
-    @JsonProperty("3. low")
+    @JsonProperty("low")
     private String low;
 
-    @JsonProperty("4. close")
+    @JsonProperty("close")
     private String close;
 
-    @JsonProperty("5. volume")
+    @JsonProperty("volume")
     private String volume;
 
-    // Getters and setters
+    // Getters and Setters
+    public String getDatetime() {
+        return datetime;
+    }
+
+    public void setDatetime(String datetime) {
+        this.datetime = datetime;
+    }
+
     public String getOpen() {
         return open;
     }

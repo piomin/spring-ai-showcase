@@ -2,19 +2,17 @@ package pl.piomin.services.functions.stock.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.Map;
+import java.util.List;
 
 public class StockData {
 
-    @JsonProperty("Time Series (Daily)")
-    private Map<String, DailyStockData> timeSeriesDaily;
+    private List<DailyStockData> values;
 
-    // Getters and setters
-    public Map<String, DailyStockData> getTimeSeriesDaily() {
-        return timeSeriesDaily;
+    public List<DailyStockData> getValues() {
+        return values;
     }
 
-    public void setTimeSeriesDaily(Map<String, DailyStockData> timeSeriesDaily) {
-        this.timeSeriesDaily = timeSeriesDaily;
+    public void setValues(List<DailyStockData> values) {
+        this.values = values;
     }
 }
