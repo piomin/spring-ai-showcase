@@ -110,7 +110,7 @@ public class StockController {
         PromptTemplate pt = new PromptTemplate("""
                 Which share is the most % growth?
                 The 0 element in the prices table is the latest price, while the last element is the oldest price.
-                Return a full name of company instead of a market shortcut. 
+                Return a full name of company instead of a market shortcut.
                 """);
 
         SearchRequest searchRequest = SearchRequest.builder()
