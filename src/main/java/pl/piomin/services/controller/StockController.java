@@ -94,10 +94,36 @@ public class StockController {
                 The 0 element in the prices table is the latest price, while the last element is the oldest price.
                 """);
 
-        Prompt p = pt.create(Map.of("query", "Find the most growth trends", "target", "share"));
+        Prompt p = pt.create(
+                Map.of("query", "Find the most growth trends",
+                       "target", "share")
+        );
 
         return this.chatClient.prompt(p)
                 .advisors(new QuestionAnswerAdvisor(store))
+                .call()
+                .content();
+    }
+
+    @RequestMapping("/v1-1/most-growth-trend")
+    String getBestTrendV11() {
+        PromptTemplate pt = new PromptTemplate("""
+                Which share is the most % growth?
+                The 0 element in the prices table is the latest price, while the last element is the oldest price.
+                Return a full name of company instead of a market shortcut. 
+                """);
+
+        SearchRequest searchRequest = SearchRequest.builder()
+                .query("""
+                Find the most growth trends.
+                The 0 element in the prices table is the latest price, while the last element is the oldest price.
+                """)
+                .topK(3)
+                .similarityThreshold(0.7)
+                .build();
+
+        return this.chatClient.prompt(pt.create())
+                .advisors(new QuestionAnswerAdvisor(store, searchRequest))
                 .call()
                 .content();
     }
