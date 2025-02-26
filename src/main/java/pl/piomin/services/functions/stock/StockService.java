@@ -16,7 +16,7 @@ public class StockService implements Function<StockRequest, StockResponse> {
 
     @Autowired
     RestTemplate restTemplate;
-    @Value("${STOCK_API_KEY}")
+    @Value("${STOCK_API_KEY:none}")
     String apiKey;
 
     @Override

@@ -40,7 +40,7 @@ public class StockController {
     private final RestTemplate restTemplate;
     private final VectorStore store;
 
-    @Value("${STOCK_API_KEY}")
+    @Value("${STOCK_API_KEY:none}")
     private String apiKey;
 
     public StockController(ChatClient.Builder chatClientBuilder,
