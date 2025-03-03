@@ -1,16 +1,15 @@
 package pl.piomin.services.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.client.advisor.RetrievalAugmentationAdvisor;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.ai.chat.client.advisor.api.Advisor;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.ai.chat.prompt.PromptTemplate;
-import org.springframework.ai.chat.prompt.PromptTemplateMessageActions;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.image.ImageModel;
 import org.springframework.ai.image.ImageOptionsBuilder;
@@ -18,26 +17,33 @@ import org.springframework.ai.image.ImagePrompt;
 import org.springframework.ai.image.ImageResponse;
 import org.springframework.ai.model.Media;
 import org.springframework.ai.rag.retrieval.search.VectorStoreDocumentRetriever;
+import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
-import pl.piomin.services.functions.stock.api.Stock;
+import pl.piomin.services.model.ImageDescription;
 
-import java.net.MalformedURLException;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/images")
 public class ImageController {
 
     private final static Logger LOG = LoggerFactory.getLogger(ImageController.class);
+    private final ObjectMapper mapper = new ObjectMapper();
+
     private final ChatClient chatClient;
     private final ImageModel imageModel;
     private final VectorStore store;
     private List<Media> images;
+    private List<Media> dynamicImages = new ArrayList<>();
 
     public ImageController(ChatClient.Builder chatClientBuilder,
                            ImageModel imageModel,
@@ -63,11 +69,20 @@ public class ImageController {
     }
 
     @GetMapping("/load")
-    void load() {
+    void load() throws JsonProcessingException {
+        String msg = """
+        Explain what do you see on the image.
+        Generate a compact description that explains only what is visible.
+        """;
         for (Media image : images) {
+            UserMessage um = new UserMessage(msg, image);
+            String content = this.chatClient.prompt(new Prompt(um))
+                    .call()
+                    .content();
+
             var doc = Document.builder()
                     .id(image.getId())
-                    .media(image)
+                    .text(mapper.writeValueAsString(new ImageDescription(image.getId(), content)))
                     .build();
             store.add(List.of(doc));
             LOG.info("Document added: {}", image.getId());
@@ -93,8 +108,8 @@ public class ImageController {
         return images.get(Integer.parseInt(content)-1).getDataAsByteArray();
     }
 
-    @GetMapping("/generate/{object}")
-    String generate(@PathVariable String object) throws MalformedURLException {
+    @GetMapping(value = "/generate/{object}", produces = MediaType.IMAGE_PNG_VALUE)
+    byte[] generate(@PathVariable String object) throws IOException {
         ImageResponse ir = imageModel.call(new ImagePrompt("Generate an image with " + object, ImageOptionsBuilder.builder()
                 .height(1024)
                 .width(1024)
@@ -103,21 +118,63 @@ public class ImageController {
                 .build()));
         UrlResource url = new UrlResource(ir.getResult().getOutput().getUrl());
         LOG.info("Generated URL: {}", ir.getResult().getOutput().getUrl());
+        dynamicImages.add(Media.builder()
+                .id(UUID.randomUUID().toString())
+                .mimeType(MimeTypeUtils.IMAGE_PNG)
+                .data(url)
+                .build());
+        return url.getContentAsByteArray();
+    }
 
-        UserMessage um = new UserMessage("Find the most similar image.", new Media(MimeTypeUtils.IMAGE_PNG, url));
-
-        Advisor retrievalAugmentationAdvisor = RetrievalAugmentationAdvisor.builder()
-                .documentRetriever(VectorStoreDocumentRetriever.builder()
-                        .similarityThreshold(0.7)
-                        .topK(3)
-                        .vectorStore(store)
-                        .build())
-//                .queryTransformers(rqtBuilder.promptTemplate(pt).build())
-                .build();
-
+    @GetMapping("/describe")
+    String[] describe() {
+        UserMessage um = new UserMessage("Explain what do you see on each image.",
+                List.copyOf(Stream.concat(images.stream(), dynamicImages.stream()).toList()));
         return this.chatClient.prompt(new Prompt(um))
-                .advisors(retrievalAugmentationAdvisor)
+                .call()
+                .entity(String[].class);
+    }
+
+    @GetMapping("/generate-and-match/{object}")
+    List<Document> generateAndMatch(@PathVariable String object) throws IOException {
+        ImageResponse ir = imageModel.call(new ImagePrompt("Generate an image with " + object, ImageOptionsBuilder.builder()
+                .height(1024)
+                .width(1024)
+                .N(1)
+                .responseFormat("url")
+                .build()));
+        UrlResource url = new UrlResource(ir.getResult().getOutput().getUrl());
+        LOG.info("URL: {}", ir.getResult().getOutput().getUrl());
+
+        String msg = """
+        Explain what do you see on the image.
+        Generate a compact description that explains only what is visible.
+        """;
+
+        UserMessage um = new UserMessage(msg, new Media(MimeTypeUtils.IMAGE_PNG, url));
+        String content = this.chatClient.prompt(new Prompt(um))
                 .call()
                 .content();
+
+        SearchRequest searchRequest = SearchRequest.builder()
+                .query("Find the most similar description to this: " + content)
+                .topK(2)
+                .build();
+
+        return store.similaritySearch(searchRequest);
+
+//        Advisor retrievalAugmentationAdvisor = RetrievalAugmentationAdvisor.builder()
+//                .documentRetriever(VectorStoreDocumentRetriever.builder()
+//                        .similarityThreshold(0.7)
+//                        .topK(3)
+//                        .vectorStore(store)
+//                        .build())
+//                .build();
+//
+//        return this.chatClient.prompt(new Prompt(um))
+//                .advisors(retrievalAugmentationAdvisor)
+//                .call()
+//                .content();
     }
+
 }

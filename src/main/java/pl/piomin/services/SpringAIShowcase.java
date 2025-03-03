@@ -45,4 +45,21 @@ public class SpringAIShowcase {
         return new RestTemplate();
     }
 
+//    @Bean
+//    @ConditionalOnMissingBean(VectorStore.class)
+//    VectorStore simpleVectorStore(EmbeddingModel embeddingModel) {
+//        return SimpleVectorStore.builder(embeddingModel).build();
+//    }
+
+//    @Bean
+//    public BatchingStrategy customTokenCountBatchingStrategy() {
+//        return new TokenCountBatchingStrategy(
+//                EncodingType.CL100K_BASE,  // Specify the encoding type
+//                8000,                      // Set the maximum input token count
+//                0.1,// Set the reserve percentage
+//                new MediaContentFormatter(),
+//                MetadataMode.ALL
+//        );
+//    }
+
 }
