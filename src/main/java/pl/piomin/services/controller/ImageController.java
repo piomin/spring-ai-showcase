@@ -29,6 +29,7 @@ import pl.piomin.services.model.ImageDescription;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -40,18 +41,18 @@ public class ImageController {
     private final ObjectMapper mapper = new ObjectMapper();
 
     private final ChatClient chatClient;
-    private final ImageModel imageModel;
+    private ImageModel imageModel;
     private final VectorStore store;
     private List<Media> images;
     private List<Media> dynamicImages = new ArrayList<>();
 
     public ImageController(ChatClient.Builder chatClientBuilder,
-                           ImageModel imageModel,
+                           Optional<ImageModel> imageModel,
                            VectorStore store) {
         this.chatClient = chatClientBuilder
                 .defaultAdvisors(new SimpleLoggerAdvisor())
                 .build();
-        this.imageModel = imageModel;
+        imageModel.ifPresent(model -> this.imageModel = model);
         this.store = store;
 
         this.images = List.of(
@@ -66,27 +67,6 @@ public class ImageController {
                 Media.builder().id("animals-4").mimeType(MimeTypeUtils.IMAGE_PNG).data(new ClassPathResource("images/animals-4.png")).build(),
                 Media.builder().id("animals-5").mimeType(MimeTypeUtils.IMAGE_PNG).data(new ClassPathResource("images/animals-5.png")).build()
         );
-    }
-
-    @GetMapping("/load")
-    void load() throws JsonProcessingException {
-        String msg = """
-        Explain what do you see on the image.
-        Generate a compact description that explains only what is visible.
-        """;
-        for (Media image : images) {
-            UserMessage um = new UserMessage(msg, image);
-            String content = this.chatClient.prompt(new Prompt(um))
-                    .call()
-                    .content();
-
-            var doc = Document.builder()
-                    .id(image.getId())
-                    .text(mapper.writeValueAsString(new ImageDescription(image.getId(), content)))
-                    .build();
-            store.add(List.of(doc));
-            LOG.info("Document added: {}", image.getId());
-        }
     }
 
     @GetMapping(value = "/find/{object}", produces = MediaType.IMAGE_PNG_VALUE)
@@ -135,6 +115,27 @@ public class ImageController {
                 .entity(String[].class);
     }
 
+    @GetMapping("/load")
+    void load() throws JsonProcessingException {
+        String msg = """
+        Explain what do you see on the image.
+        Generate a compact description that explains only what is visible.
+        """;
+        for (Media image : images) {
+            UserMessage um = new UserMessage(msg, image);
+            String content = this.chatClient.prompt(new Prompt(um))
+                    .call()
+                    .content();
+
+            var doc = Document.builder()
+                    .id(image.getId())
+                    .text(mapper.writeValueAsString(new ImageDescription(image.getId(), content)))
+                    .build();
+            store.add(List.of(doc));
+            LOG.info("Document added: {}", image.getId());
+        }
+    }
+
     @GetMapping("/generate-and-match/{object}")
     List<Document> generateAndMatch(@PathVariable String object) throws IOException {
         ImageResponse ir = imageModel.call(new ImagePrompt("Generate an image with " + object, ImageOptionsBuilder.builder()
@@ -162,19 +163,6 @@ public class ImageController {
                 .build();
 
         return store.similaritySearch(searchRequest);
-
-//        Advisor retrievalAugmentationAdvisor = RetrievalAugmentationAdvisor.builder()
-//                .documentRetriever(VectorStoreDocumentRetriever.builder()
-//                        .similarityThreshold(0.7)
-//                        .topK(3)
-//                        .vectorStore(store)
-//                        .build())
-//                .build();
-//
-//        return this.chatClient.prompt(new Prompt(um))
-//                .advisors(retrievalAugmentationAdvisor)
-//                .call()
-//                .content();
     }
 
 }
