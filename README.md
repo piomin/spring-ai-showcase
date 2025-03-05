@@ -21,10 +21,14 @@ This project demonstrates the integration of AI capabilities within a Spring Boo
 
 ## Architecture
 
-Currently, there are four `@RestController`s that show Spring AI features:\
-`pl.piomin.services.controller.PersonController` - prompt template, chat memory, and structured output based on a simple example that asks AI model to generate some persons \
-`pl.piomin.services.controller.WalletController` - function calling that calculates a value of our wallet stored in local database in conjunction with the latest stock prices \
-`pl.piomin.services.controller.StockController` - RAG with a Pinecone vector store and OpenAI based on stock prices API \
+Currently, there are four `@RestController`s that show Spring AI features:
+
+`pl.piomin.services.controller.PersonController` - prompt template, chat memory, and structured output based on a simple example that asks AI model to generate some persons
+
+`pl.piomin.services.controller.WalletController` - function calling that calculates a value of our wallet stored in local database in conjunction with the latest stock prices
+
+`pl.piomin.services.controller.StockController` - RAG with a Pinecone vector store and OpenAI based on stock prices API
+
 `pl.piomin.services.controller.ImageController` - image model and multimodality
 
 The architecture is designed to be modular and scalable, focusing on demonstrating how AI features can be incorporated into Spring-based applications.
