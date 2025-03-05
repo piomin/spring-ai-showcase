@@ -3,7 +3,7 @@ package pl.piomin.services.controller;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.ai.chat.prompt.PromptTemplate;
-import org.springframework.ai.openai.OpenAiChatOptions;
+import org.springframework.ai.model.function.FunctionCallingOptions;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,7 +27,7 @@ public class WalletController {
         """);
 
         return this.chatClient.prompt(pt.create(
-                OpenAiChatOptions.builder()
+                FunctionCallingOptions.builder()
                         .function("numberOfShares")
                         .function("latestStockPrices")
                         .build()))
