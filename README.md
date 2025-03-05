@@ -21,9 +21,11 @@ This project demonstrates the integration of AI capabilities within a Spring Boo
 
 ## Architecture
 
-The system comprises the following module:
-
-- **ai-service**: A Spring Boot application that serves as the core AI service, handling AI-related operations and integrations.
+Currently, there are four `@RestController`s that show Spring AI features:\
+`pl.piomin.services.controller.PersonController` - prompt template, chat memory, and structured output based on a simple example that asks AI model to generate some persons \
+`pl.piomin.services.controller.WalletController` - function calling that calculates a value of our wallet stored in local database in conjunction with the latest stock prices \
+`pl.piomin.services.controller.StockController` - RAG with a Pinecone vector store and OpenAI based on stock prices API \
+`pl.piomin.services.controller.ImageController` - image model and multimodality
 
 The architecture is designed to be modular and scalable, focusing on demonstrating how AI features can be incorporated into Spring-based applications.
 
@@ -52,8 +54,21 @@ To enable integration with Ollama, we should activate the `ollama-ai` profile:
 mvn spring-boot:run -Pollama-ai
 ```
 
+For scenarios with a vector store (`StockController`, `ImageController`) you need to export the following ENV:
+```shell
+export PINECONE_TOKEN=<YOUR_PINECONE_TOKEN>
+```
+
+For scenarios with a stock API (`StockController`, `WalletController`) you need to export the following ENV:
+```shell
+export STOCK_API_KEY=<YOUR_PINECONE_TOKEN>
+```
+
+More details in the articles.
+
 # Articles
 1. Getting started with Spring AI **Chat Model** and easily switch between different AI providers including **OpenAI**, **Mistral AI** and **Ollama**. The example is available in the branch [master](https://github.com/piomin/spring-ai-showcase/tree/master). A detailed guide may be found in the following article: [Getting Started with Spring AI and Chat Model](https://piotrminkowski.com/2025/01/28/getting-started-with-spring-ai-and-chat-model)
 2. Getting started with Spring AI **Function Calling** for OpenAI chat models. The example is available in the branch [master](https://github.com/piomin/spring-ai-showcase/tree/master). A detailed guide may be found in the following article: [Getting Started with Spring AI Function Calling](https://piotrminkowski.com/2025/01/30/getting-started-with-spring-ai-function-calling)
 3. Using **RAG** (Retrieval Augmented Generation) and **Vector Store** with Spring AI. The example is available in the branch [master](https://github.com/piomin/spring-ai-showcase/tree/master). A detailed guide may be found in the following article: [Using RAG and Vector Store with Spring AI](https://piotrminkowski.com/2025/02/24/using-rag-and-vector-store-with-spring-ai/)
+4. Using **Multimodality** feature and **Image Model** with Spring AI and OpenAI. The example is available in the branch [master](https://github.com/piomin/spring-ai-showcase/tree/master). A detailed guide may be found in the following article: [Spring AI with Multimodality and Images](https://piotrminkowski.com/2025/03/04/spring-ai-with-multimodality-and-images/)
 
