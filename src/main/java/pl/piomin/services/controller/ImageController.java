@@ -5,9 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.RetrievalAugmentationAdvisor;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
-import org.springframework.ai.chat.client.advisor.api.Advisor;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.document.Document;
@@ -16,15 +14,16 @@ import org.springframework.ai.image.ImageOptionsBuilder;
 import org.springframework.ai.image.ImagePrompt;
 import org.springframework.ai.image.ImageResponse;
 import org.springframework.ai.model.Media;
-import org.springframework.ai.rag.retrieval.search.VectorStoreDocumentRetriever;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
 import pl.piomin.services.model.ImageDescription;
+import pl.piomin.services.model.Item;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -113,6 +112,22 @@ public class ImageController {
         return this.chatClient.prompt(new Prompt(um))
                 .call()
                 .entity(String[].class);
+    }
+
+    @GetMapping("/describe/{image}")
+    List<Item> describeImage(@PathVariable String image) {
+        Media media = Media.builder()
+                .id(image)
+                .mimeType(MimeTypeUtils.IMAGE_PNG)
+                .data(new ClassPathResource("images/" + image + ".png"))
+                .build();
+        UserMessage um = new UserMessage("""
+        List all items you see on the image and define their category. 
+        Return items inside the JSON array in RFC8259 compliant JSON format.
+        """, media);
+        return this.chatClient.prompt(new Prompt(um))
+                .call()
+                .entity(new ParameterizedTypeReference<>() {});
     }
 
     @GetMapping("/load")
