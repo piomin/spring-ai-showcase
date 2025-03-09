@@ -2,6 +2,7 @@ package pl.piomin.services.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.NotSupportedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
@@ -88,21 +89,24 @@ public class ImageController {
     }
 
     @GetMapping(value = "/generate/{object}", produces = MediaType.IMAGE_PNG_VALUE)
-    byte[] generate(@PathVariable String object) throws IOException {
+    byte[] generate(@PathVariable String object) throws IOException, NotSupportedException {
+        if (imageModel == null)
+            throw new NotSupportedException("Image model is not supported");
         ImageResponse ir = imageModel.call(new ImagePrompt("Generate an image with " + object, ImageOptionsBuilder.builder()
                 .height(1024)
                 .width(1024)
                 .N(1)
                 .responseFormat("url")
                 .build()));
-        UrlResource url = new UrlResource(ir.getResult().getOutput().getUrl());
-        LOG.info("Generated URL: {}", ir.getResult().getOutput().getUrl());
+        String url = ir.getResult().getOutput().getUrl();
+        UrlResource resource = new UrlResource(url);
+        LOG.info("Generated URL: {}", url);
         dynamicImages.add(Media.builder()
                 .id(UUID.randomUUID().toString())
                 .mimeType(MimeTypeUtils.IMAGE_PNG)
                 .data(url)
                 .build());
-        return url.getContentAsByteArray();
+        return resource.getContentAsByteArray();
     }
 
     @GetMapping("/describe")
