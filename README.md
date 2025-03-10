@@ -16,8 +16,6 @@ This project demonstrates the integration of AI capabilities within a Spring Boo
 - [Architecture](#architecture)
 - [Running the Application](#running-the-application)
 - [Articles](#articles)
-- [Contributing](#contributing)
-- [License](#license)
 
 ## Architecture
 
@@ -58,6 +56,11 @@ To enable integration with Ollama, we should activate the `ollama-ai` profile:
 mvn spring-boot:run -Pollama-ai
 ```
 
+Before that, we must run the model on Ollama, e.g.:
+```shell
+ollama run llava
+```
+
 For scenarios with a vector store (`StockController`, `ImageController`) you need to export the following ENV:
 ```shell
 export PINECONE_TOKEN=<YOUR_PINECONE_TOKEN>
@@ -75,4 +78,5 @@ More details in the articles.
 2. Getting started with Spring AI **Function Calling** for OpenAI chat models. The example is available in the branch [master](https://github.com/piomin/spring-ai-showcase/tree/master). A detailed guide may be found in the following article: [Getting Started with Spring AI Function Calling](https://piotrminkowski.com/2025/01/30/getting-started-with-spring-ai-function-calling)
 3. Using **RAG** (Retrieval Augmented Generation) and **Vector Store** with Spring AI. The example is available in the branch [master](https://github.com/piomin/spring-ai-showcase/tree/master). A detailed guide may be found in the following article: [Using RAG and Vector Store with Spring AI](https://piotrminkowski.com/2025/02/24/using-rag-and-vector-store-with-spring-ai/)
 4. Using **Multimodality** feature and **Image Model** with Spring AI and OpenAI. The example is available in the branch [master](https://github.com/piomin/spring-ai-showcase/tree/master). A detailed guide may be found in the following article: [Spring AI with Multimodality and Images](https://piotrminkowski.com/2025/03/04/spring-ai-with-multimodality-and-images/)
+5. Running multiple models with **Ollama** and integration through Spring AI. The example is available in the branch [master](https://github.com/piomin/spring-ai-showcase/tree/master). A detailed guide may be found in the following article: [Using Ollama with Spring AI](https://piotrminkowski.com/2025/03/10/using-ollama-with-spring-ai/)
 
