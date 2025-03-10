@@ -38,6 +38,7 @@ public class PersonController {
                 Each object should contain an auto-incremented id field.
                 The age value should be a random number between 18 and 99.
                 Do not include any explanations or additional text.
+                Return data in RFC8259 compliant JSON format.
                 """);
 
         return this.chatClient.prompt(pt.create())

@@ -111,8 +111,10 @@ public class ImageController {
 
     @GetMapping("/describe")
     String[] describe() {
-        UserMessage um = new UserMessage("Explain what do you see on each image.",
-                List.copyOf(Stream.concat(images.stream(), dynamicImages.stream()).toList()));
+        UserMessage um = new UserMessage("""
+                Explain what do you see on each image in the input list.
+                Return data in RFC8259 compliant JSON format.
+                """, List.copyOf(Stream.concat(images.stream(), dynamicImages.stream()).toList()));
         return this.chatClient.prompt(new Prompt(um))
                 .call()
                 .entity(String[].class);
@@ -126,7 +128,7 @@ public class ImageController {
                 .data(new ClassPathResource("images/" + image + ".png"))
                 .build();
         UserMessage um = new UserMessage("""
-        List all items you see on the image and define their category. 
+        List all items you see on the image and define their category.
         Return items inside the JSON array in RFC8259 compliant JSON format.
         """, media);
         return this.chatClient.prompt(new Prompt(um))
