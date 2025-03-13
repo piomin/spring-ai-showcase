@@ -7,17 +7,25 @@ import org.springframework.ai.model.function.FunctionCallingOptions;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import pl.piomin.services.tools.StockTools;
+import pl.piomin.services.tools.WalletTools;
 
 @RestController
 @RequestMapping("/wallet")
 public class WalletController {
 
     private final ChatClient chatClient;
+    private final StockTools stockTools;
+    private final WalletTools walletTools;
 
-    public WalletController(ChatClient.Builder chatClientBuilder) {
+    public WalletController(ChatClient.Builder chatClientBuilder,
+                            StockTools stockTools,
+                            WalletTools walletTools) {
         this.chatClient = chatClientBuilder
                 .defaultAdvisors(new SimpleLoggerAdvisor())
                 .build();
+        this.stockTools = stockTools;
+        this.walletTools = walletTools;
     }
 
     @GetMapping
@@ -31,6 +39,18 @@ public class WalletController {
                         .function("numberOfShares")
                         .function("latestStockPrices")
                         .build()))
+                .call()
+                .content();
+    }
+
+    @GetMapping("/with-tools")
+    String calculateWalletValueWithTools() {
+        PromptTemplate pt = new PromptTemplate("""
+        What’s the current value in dollars of my wallet based on the latest stock daily prices ?
+        """);
+
+        return this.chatClient.prompt(pt.create())
+                .tools(stockTools, walletTools)
                 .call()
                 .content();
     }

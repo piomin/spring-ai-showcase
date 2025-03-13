@@ -13,9 +13,12 @@ import java.util.function.Function;
 public class StockService implements Function<StockRequest, StockResponse> {
 
     private static final Logger LOG = LoggerFactory.getLogger(StockService.class);
+    private RestTemplate restTemplate;
 
-    @Autowired
-    RestTemplate restTemplate;
+    public StockService(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
+
     @Value("${STOCK_API_KEY:none}")
     String apiKey;
 

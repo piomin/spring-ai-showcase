@@ -12,6 +12,8 @@ import pl.piomin.services.functions.stock.StockService;
 import pl.piomin.services.functions.wallet.WalletRepository;
 import pl.piomin.services.functions.wallet.WalletResponse;
 import pl.piomin.services.functions.wallet.WalletService;
+import pl.piomin.services.tools.StockTools;
+import pl.piomin.services.tools.WalletTools;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -37,12 +39,22 @@ public class SpringAIShowcase {
     @Bean
     @Description("Latest stock prices")
     public Function<StockRequest, StockResponse> latestStockPrices() {
-        return new StockService();
+        return new StockService(restTemplate());
     }
 
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
+    }
+
+    @Bean
+    public StockTools stockTools() {
+        return new StockTools(restTemplate());
+    }
+
+    @Bean
+    public WalletTools walletTools(WalletRepository walletRepository) {
+        return new WalletTools(walletRepository);
     }
 
 //    @Bean
