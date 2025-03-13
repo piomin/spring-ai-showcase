@@ -37,10 +37,13 @@ public class StockTools {
     }
 
     @Tool(description = "Historical daily stock prices")
-    public List<DailyShareQuote> getHistoricalStockPrices(@ToolParam(description = "Name of company") String company) {
-        StockData data = restTemplate.getForObject("https://api.twelvedata.com/time_series?symbol={0}&interval=1day&outputsize=10&apikey={1}",
+    public List<DailyShareQuote> getHistoricalStockPrices(@ToolParam(description = "Search period in days") int days,
+                                                          @ToolParam(description = "Name of company") String company) {
+        LOG.info("Get historical stock prices: {} for {} days", company, days);
+        StockData data = restTemplate.getForObject("https://api.twelvedata.com/time_series?symbol={0}&interval=1day&outputsize={1}&apikey={2}",
                 StockData.class,
                 company,
+                days,
                 apiKey);
         return data.getValues().stream()
                 .map(d -> new DailyShareQuote(company, Float.parseFloat(d.getClose()), d.getDatetime()))

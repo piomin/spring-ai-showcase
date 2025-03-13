@@ -14,7 +14,7 @@ public class WalletTools {
         this.walletRepository = walletRepository;
     }
 
-    @Tool(description = "Number of shares for each company in my portfolio")
+    @Tool(description = "Number of shares for each company in my wallet")
     public List<Share> getNumberOfShares() {
         return (List<Share>) walletRepository.findAll();
     }
