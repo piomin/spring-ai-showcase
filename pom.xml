@@ -84,6 +84,15 @@
             </dependencies>
         </profile>
         <profile>
+            <id>azure-ai</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.springframework.ai</groupId>
+                    <artifactId>spring-ai-azure-openai-spring-boot-starter</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
             <id>docker-compose</id>
             <dependencies>
                 <dependency>
