@@ -61,6 +61,16 @@ Before that, we must run the model on Ollama, e.g.:
 ollama run llava
 ```
 
+To enable integration with Azure OpenAI, we should activate the `azure-ai` profile and activate the Spring Boot `azure-ai` profile:
+```shell
+mvn spring-boot:run -Pazure-ai -Dspring-boot.run.profiles=azure-ai
+```
+
+You should also export the Azure OpenAI credentials:
+```shell
+export AZURE_OPENAI_API_KEY=<YOUR_AZURE_OPENAI_API_KEY>
+```
+
 For scenarios with a vector store (`StockController`, `ImageController`) you need to export the following ENV:
 ```shell
 export PINECONE_TOKEN=<YOUR_PINECONE_TOKEN>
@@ -68,7 +78,7 @@ export PINECONE_TOKEN=<YOUR_PINECONE_TOKEN>
 
 For scenarios with a stock API (`StockController`, `WalletController`) you need to export the following ENV:
 ```shell
-export STOCK_API_KEY=<YOUR_PINECONE_TOKEN>
+export STOCK_API_KEY=<YOUR_STOCK_API_KEY>
 ```
 
 More details in the articles.
@@ -80,4 +90,5 @@ More details in the articles.
 4. Using **Multimodality** feature and **Image Model** with Spring AI and OpenAI. The example is available in the branch [master](https://github.com/piomin/spring-ai-showcase/tree/master). A detailed guide may be found in the following article: [Spring AI with Multimodality and Images](https://piotrminkowski.com/2025/03/04/spring-ai-with-multimodality-and-images/)
 5. Running multiple models with **Ollama** and integration through Spring AI. The example is available in the branch [master](https://github.com/piomin/spring-ai-showcase/tree/master). A detailed guide may be found in the following article: [Using Ollama with Spring AI](https://piotrminkowski.com/2025/03/10/using-ollama-with-spring-ai/)
 6. Getting started with Spring AI **Tool Calling** for OpenAI/MistralAI chat models. The example is available in the branch [master](https://github.com/piomin/spring-ai-showcase/tree/master). A detailed guide may be found in the following article: [Tool Calling with Spring AI](https://piotrminkowski.com/2025/03/13/tool-calling-with-spring-ai/)
+7. Integrate Spring AI with **Azure OpenAI** for chat models, image generation, tool calling and RAG. The example is available in the branch [master](https://github.com/piomin/spring-ai-showcase/tree/master). A detailed guide may be found in the following article: [Spring AI with Azure OpenAI](https://piotrminkowski.com/2025/03/25/spring-ai-with-azure-openai/)
 
