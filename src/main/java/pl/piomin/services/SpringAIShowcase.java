@@ -1,5 +1,6 @@
 package pl.piomin.services;
 
+import io.micrometer.observation.ObservationRegistry;
 import org.springframework.ai.chat.memory.InMemoryChatMemory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -55,6 +56,11 @@ public class SpringAIShowcase {
     @Bean
     public WalletTools walletTools(WalletRepository walletRepository) {
         return new WalletTools(walletRepository);
+    }
+
+    @Bean
+    public ObservationRegistry observationRegistry() {
+        return ObservationRegistry.create();
     }
 
 //    @Bean

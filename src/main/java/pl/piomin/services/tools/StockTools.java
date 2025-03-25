@@ -27,12 +27,13 @@ public class StockTools {
 
     @Tool(description = "Latest stock prices")
     public StockResponse getLatestStockPrices(@ToolParam(description = "Name of company") String company) {
+        LOG.info("Get stock prices for: {}", company);
         StockData data = restTemplate.getForObject("https://api.twelvedata.com/time_series?symbol={0}&interval=1min&outputsize=1&apikey={1}",
                 StockData.class,
                 company,
                 apiKey);
         DailyStockData latestData = data.getValues().get(0);
-        LOG.info("Get stock prices: {} -> {}", company, latestData.getClose());
+        LOG.info("Get stock prices ({}) -> {}", company, latestData.getClose());
         return new StockResponse(Float.parseFloat(latestData.getClose()));
     }
 
