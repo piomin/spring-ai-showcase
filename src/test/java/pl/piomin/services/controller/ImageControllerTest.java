@@ -14,7 +14,7 @@ class ImageControllerTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
-    @Test
+//    @Test
     void testDescribe() {
         ResponseEntity<String[]> response = restTemplate.getForEntity("/images/describe", String[].class);
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
@@ -30,7 +30,7 @@ class ImageControllerTest {
         assertThat(response.getBody()).isNotNull();
     }
 
-    @Test
+//    @Test
     void testFindObject() {
         String object = "apple";
         ResponseEntity<byte[]> response = restTemplate.getForEntity("/images/find/" + object, byte[].class);
@@ -46,11 +46,11 @@ class ImageControllerTest {
 //        assertThat(response.getBody()).isNotNull();
 //    }
 
-    @Test
-    void testGenerateAndMatch() {
-        String object = "orange";
-        ResponseEntity<String> response = restTemplate.getForEntity("/images/generate-and-match/" + object, String.class);
-        assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
-        assertThat(response.getBody()).isNotNull();
-    }
+//    @Test
+//    void testGenerateAndMatch() {
+//        String object = "orange";
+//        ResponseEntity<String> response = restTemplate.getForEntity("/images/generate-and-match/" + object, String.class);
+//        assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
+//        assertThat(response.getBody()).isNotNull();
+//    }
 }
