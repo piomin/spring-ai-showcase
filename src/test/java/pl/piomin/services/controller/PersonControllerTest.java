@@ -32,7 +32,7 @@ class PersonControllerTest {
     @Test
     @Order(2)
     void testFindPersonById() {
-        Long id = 4L;
+        int id = 4;
         ResponseEntity<Person> byIdResponse = restTemplate.getForEntity("/persons/" + id, Person.class);
         assertThat(byIdResponse.getStatusCode().is2xxSuccessful()).isTrue();
         assertThat(byIdResponse.getBody()).isNotNull();
