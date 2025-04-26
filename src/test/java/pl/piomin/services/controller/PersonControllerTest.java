@@ -1,6 +1,9 @@
 package pl.piomin.services.controller;
 
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -12,12 +15,14 @@ import java.util.Objects;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class PersonControllerTest {
 
     @Autowired
     private TestRestTemplate restTemplate;
 
     @Test
+    @Order(1)
     void testFindAllPersons() {
         ResponseEntity<Person[]> response = restTemplate.getForEntity("/persons", Person[].class);
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
@@ -25,6 +30,7 @@ class PersonControllerTest {
     }
 
     @Test
+    @Order(2)
     void testFindPersonById() {
         Long id = 4L;
         ResponseEntity<Person> byIdResponse = restTemplate.getForEntity("/persons/" + id, Person.class);
