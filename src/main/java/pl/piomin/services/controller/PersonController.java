@@ -26,7 +26,7 @@ public class PersonController {
                             ChatMemory chatMemory) {
         this.chatClient = chatClientBuilder
                 .defaultAdvisors(
-                        new PromptChatMemoryAdvisor(chatMemory),
+                        PromptChatMemoryAdvisor.builder(chatMemory).build(),
                         new SimpleLoggerAdvisor())
                 .build();
     }
