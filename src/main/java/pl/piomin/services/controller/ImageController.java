@@ -78,7 +78,7 @@ public class ImageController {
         """.formatted(object);
         LOG.info(msg);
 
-        UserMessage um = new UserMessage(msg, images);
+        UserMessage um = UserMessage.builder().text(msg).media(images).build();
 
         String content = this.chatClient.prompt(new Prompt(um))
                 .call()
@@ -111,10 +111,11 @@ public class ImageController {
 
     @GetMapping("/describe")
     String[] describe() {
-        UserMessage um = new UserMessage("""
+        UserMessage um = UserMessage.builder().text("""
                 Explain what do you see on each image in the input list.
                 Return data in RFC8259 compliant JSON format.
-                """, List.copyOf(Stream.concat(images.stream(), dynamicImages.stream()).toList()));
+                """).media(List.copyOf(Stream.concat(images.stream(), dynamicImages.stream()).toList())).build();
+
         return this.chatClient.prompt(new Prompt(um))
                 .call()
                 .entity(String[].class);
@@ -127,10 +128,12 @@ public class ImageController {
                 .mimeType(MimeTypeUtils.IMAGE_PNG)
                 .data(new ClassPathResource("images/" + image + ".png"))
                 .build();
-        UserMessage um = new UserMessage("""
+
+        UserMessage um = UserMessage.builder().text("""
         List all items you see on the image and define their category.
         Return items inside the JSON array in RFC8259 compliant JSON format.
-        """, media);
+        """).media(media).build();
+
         return this.chatClient.prompt(new Prompt(um))
                 .call()
                 .entity(new ParameterizedTypeReference<>() {});
@@ -143,7 +146,10 @@ public class ImageController {
         Generate a compact description that explains only what is visible.
         """;
         for (Media image : images) {
-            UserMessage um = new UserMessage(msg, image);
+            UserMessage um = UserMessage.builder()
+                    .text(msg)
+                    .media(image)
+                    .build();
             String content = this.chatClient.prompt(new Prompt(um))
                     .call()
                     .content();
@@ -173,7 +179,11 @@ public class ImageController {
         Generate a compact description that explains only what is visible.
         """;
 
-        UserMessage um = new UserMessage(msg, new Media(MimeTypeUtils.IMAGE_PNG, url));
+        UserMessage um = UserMessage.builder()
+                .text(msg)
+                .media(new Media(MimeTypeUtils.IMAGE_PNG, url))
+                .build();
+
         String content = this.chatClient.prompt(new Prompt(um))
                 .call()
                 .content();

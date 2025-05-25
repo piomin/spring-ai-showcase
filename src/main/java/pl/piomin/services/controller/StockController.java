@@ -122,7 +122,7 @@ public class StockController {
                 .build();
 
         return this.chatClient.prompt(pt.create())
-                .advisors(new QuestionAnswerAdvisor(store, searchRequest))
+                .advisors(QuestionAnswerAdvisor.builder(store).searchRequest(searchRequest).build())
                 .call()
                 .content();
     }
