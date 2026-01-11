@@ -2,30 +2,37 @@ package pl.piomin.services.controller;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.client.RestTestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureRestTestClient
 class WalletControllerTest {
 
     @Autowired
-    private TestRestTemplate restTemplate;
+    private RestTestClient webTestClient;
 
     @Test
     void testWalletValueWithTools() {
-        ResponseEntity<String> response = restTemplate.getForEntity("/wallet/with-tools", String.class);
-        assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
-        assertThat(response.getBody()).isNotNull();
+        webTestClient.get()
+            .uri("/wallet/with-tools")
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody(String.class)
+            .value(body -> assertThat(body).isNotNull());
     }
 
 //    @Test
 //    void testHighestWalletValue() {
 //        int days = 5;
-//        ResponseEntity<String> response = restTemplate.getForEntity("/wallet/highest-day/" + days, String.class);
-//        assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
-//        assertThat(response.getBody()).isNotNull();
+//        webTestClient.get()
+//            .uri("/wallet/highest-day/" + days)
+//            .exchange()
+//            .expectStatus().isOk()
+//            .expectBody(String.class)
+//            .value(body -> assertThat(body).isNotNull());
 //    }
 }

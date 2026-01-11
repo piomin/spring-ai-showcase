@@ -2,40 +2,50 @@ package pl.piomin.services.controller;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.client.RestTestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureRestTestClient
 class ImageControllerTest {
 
     @Autowired
-    private TestRestTemplate restTemplate;
+    private RestTestClient webTestClient;
 
 //    @Test
     void testDescribe() {
-        ResponseEntity<String[]> response = restTemplate.getForEntity("/images/describe", String[].class);
-        assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
-        assertThat(response.getBody()).isNotNull();
+        webTestClient.get()
+            .uri("/images/describe")
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody(String[].class)
+            .value(list -> assertThat(list).isNotNull());
     }
 
     @Test
     void testDescribeImage() {
         // Use a known image id or fallback to a sample (e.g., "fruits")
         String imageId = "fruits";
-        ResponseEntity<String> response = restTemplate.getForEntity("/images/describe/" + imageId, String.class);
-        assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
-        assertThat(response.getBody()).isNotNull();
+        webTestClient.get()
+            .uri("/images/describe/" + imageId)
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody(String.class)
+            .value(body -> assertThat(body).isNotNull());
     }
 
 //    @Test
     void testFindObject() {
         String object = "apple";
-        ResponseEntity<byte[]> response = restTemplate.getForEntity("/images/find/" + object, byte[].class);
-        assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
-        assertThat(response.getBody()).isNotNull();
+        webTestClient.get()
+            .uri("/images/find/" + object)
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody(byte[].class)
+            .value(body -> assertThat(body).isNotNull());
     }
 
 //    @Test

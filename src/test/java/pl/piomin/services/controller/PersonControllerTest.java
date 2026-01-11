@@ -5,38 +5,46 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.client.RestTestClient;
 import pl.piomin.services.model.Person;
 
-import java.util.Objects;
-
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@AutoConfigureRestTestClient
 class PersonControllerTest {
 
     @Autowired
-    private TestRestTemplate restTemplate;
+    private RestTestClient webTestClient;
 
     @Test
     @Order(1)
     void testFindAllPersons() {
-        ResponseEntity<Person[]> response = restTemplate.getForEntity("/persons", Person[].class);
-        assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
-        assertThat(Objects.requireNonNull(response.getBody()).length).isEqualTo(10);
+        webTestClient.get()
+            .uri("/persons")
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody(Person[].class)
+                .value(people -> assertEquals(10, people.length));
     }
 
     @Test
     @Order(2)
     void testFindPersonById() {
         int id = 4;
-        ResponseEntity<Person> byIdResponse = restTemplate.getForEntity("/persons/" + id, Person.class);
-        assertThat(byIdResponse.getStatusCode().is2xxSuccessful()).isTrue();
-        assertThat(byIdResponse.getBody()).isNotNull();
-        assertThat(byIdResponse.getBody().getId()).isEqualTo(id);
+        webTestClient.get()
+            .uri("/persons/" + id)
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody(Person.class)
+            .value(person -> {
+                assertThat(person).isNotNull();
+                assertThat(person.getId()).isEqualTo(id);
+            });
     }
 
 }
