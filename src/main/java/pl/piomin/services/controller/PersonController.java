@@ -43,7 +43,7 @@ public class PersonController {
 
         return this.chatClient.prompt(pt.create())
                 .call()
-                .entity(new ParameterizedTypeReference<>() {});
+                .entity(new ParameterizedTypeReference<List<Person>>() {});
     }
 
     @GetMapping("/{id}")
