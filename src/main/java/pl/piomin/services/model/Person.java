@@ -1,5 +1,8 @@
 package pl.piomin.services.model;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+@JsonPropertyOrder({"id", "firstName", "lastName", "age", "gender", "nationality"})
 public class Person {
 
     private Integer id;

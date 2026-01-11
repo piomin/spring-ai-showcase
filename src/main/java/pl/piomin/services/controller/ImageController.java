@@ -137,11 +137,13 @@ public class ImageController {
 
         return this.chatClient.prompt(new Prompt(um))
                 .call()
-                .entity(new ParameterizedTypeReference<>() {});
+                .entity(new ParameterizedTypeReference<List<Item>>() {});
     }
 
     @GetMapping("/load")
-    void load() throws JsonProcessingException {
+    void load() throws JsonProcessingException, NotSupportedException {
+        if (store == null)
+            throw new NotSupportedException("Vector store is not supported");
         String msg = """
         Explain what do you see on the image.
         Generate a compact description that explains only what is visible.
@@ -165,7 +167,9 @@ public class ImageController {
     }
 
     @GetMapping("/generate-and-match/{object}")
-    List<Document> generateAndMatch(@PathVariable String object) throws IOException {
+    List<Document> generateAndMatch(@PathVariable String object) throws IOException, NotSupportedException {
+        if (store == null)
+            throw new NotSupportedException("Vector store is not supported");
         ImageResponse ir = imageModel.call(new ImagePrompt("Generate an image with " + object, ImageOptionsBuilder.builder()
                 .height(1024)
                 .width(1024)

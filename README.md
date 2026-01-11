@@ -77,6 +77,12 @@ To enable integration with Azure OpenAI, we should activate the `azure-ai` profi
 mvn spring-boot:run -Pazure-ai -Dspring-boot.run.profiles=azure-ai
 ```
 
+To enable integration with Anthropic Claude, we should activate the `anthropic` profile and activate the Spring Boot `anthropic` profile as well:
+```shell
+export ANTHROPIC_AI_TOKEN=<YOUR_API_TOKEN>
+mvn spring-boot:run -Panthropic -Dspring-boot.run.profiles=anthropic
+```
+
 You should also export the Azure OpenAI credentials:
 ```shell
 export AZURE_OPENAI_API_KEY=<YOUR_AZURE_OPENAI_API_KEY>
