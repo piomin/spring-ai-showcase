@@ -99,7 +99,7 @@ public class StockController {
         );
 
         return this.chatClient.prompt(p)
-                .advisors(new QuestionAnswerAdvisor(store))
+                .advisors(QuestionAnswerAdvisor.builder(store).build())
                 .call()
                 .content();
     }
