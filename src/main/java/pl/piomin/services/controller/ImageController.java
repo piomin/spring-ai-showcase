@@ -17,6 +17,7 @@ import org.springframework.ai.image.ImageResponse;
 import org.springframework.ai.content.Media;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.UrlResource;
@@ -48,7 +49,7 @@ public class ImageController {
 
     public ImageController(ChatClient.Builder chatClientBuilder,
                            Optional<ImageModel> imageModel,
-                           VectorStore store) {
+                           @Autowired(required = false) VectorStore store) {
         this.chatClient = chatClientBuilder
                 .defaultAdvisors(new SimpleLoggerAdvisor())
                 .build();

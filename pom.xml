@@ -87,6 +87,15 @@
             </dependencies>
         </profile>
         <profile>
+            <id>anthropic</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.springframework.ai</groupId>
+                    <artifactId>spring-ai-starter-model-anthropic</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
             <id>ollama-ai</id>
             <dependencies>
                 <dependency>
