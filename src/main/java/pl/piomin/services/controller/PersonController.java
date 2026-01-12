@@ -3,6 +3,7 @@ package pl.piomin.services.controller;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.PromptChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
+import org.springframework.ai.chat.client.advisor.StructuredOutputValidationAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
@@ -41,9 +42,13 @@ public class PersonController {
                 Return data in RFC8259 compliant JSON format.
                 """);
 
+        var type = new ParameterizedTypeReference<List<Person>>() {};
         return this.chatClient.prompt(pt.create())
+                .advisors(StructuredOutputValidationAdvisor.builder()
+                        .outputType(type)
+                        .build())
                 .call()
-                .entity(new ParameterizedTypeReference<List<Person>>() {});
+                .entity(type);
     }
 
     @GetMapping("/{id}")
@@ -53,6 +58,9 @@ public class PersonController {
                 """);
         Prompt p = pt.create(Map.of("id", id));
         return this.chatClient.prompt(p)
+                .advisors(StructuredOutputValidationAdvisor.builder()
+                        .outputType(Person.class)
+                        .build())
                 .call()
                 .entity(Person.class);
     }
