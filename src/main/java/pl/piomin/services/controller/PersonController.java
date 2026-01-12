@@ -3,6 +3,7 @@ package pl.piomin.services.controller;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.PromptChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
+import org.springframework.ai.chat.client.advisor.StructuredOutputValidationAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
@@ -37,13 +38,14 @@ public class PersonController {
                 Return a current list of 10 persons if exists or generate a new list with random values.
                 Each object should contain an auto-incremented id field.
                 The age value should be a random number between 18 and 99.
-                Do not include any explanations or additional text.
-                Return data in RFC8259 compliant JSON format.
                 """);
-
+        var type = new ParameterizedTypeReference<List<Person>>() {};
         return this.chatClient.prompt(pt.create())
+                .advisors(StructuredOutputValidationAdvisor.builder()
+                        .outputType(type)
+                        .build())
                 .call()
-                .entity(new ParameterizedTypeReference<List<Person>>() {});
+                .entity(type);
     }
 
     @GetMapping("/{id}")
@@ -53,6 +55,9 @@ public class PersonController {
                 """);
         Prompt p = pt.create(Map.of("id", id));
         return this.chatClient.prompt(p)
+                .advisors(StructuredOutputValidationAdvisor.builder()
+                        .outputType(Person.class)
+                        .build())
                 .call()
                 .entity(Person.class);
     }
