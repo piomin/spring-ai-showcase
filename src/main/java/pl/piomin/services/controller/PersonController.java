@@ -1,7 +1,7 @@
 package pl.piomin.services.controller;
 
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.PromptChatMemoryAdvisor;
+import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.ai.chat.client.advisor.StructuredOutputValidationAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
@@ -21,13 +21,15 @@ import java.util.Map;
 @RequestMapping("/persons")
 public class PersonController {
 
+    private static final String CONVERSATION_ID = "persons";
+
     private final ChatClient chatClient;
 
     public PersonController(ChatClient.Builder chatClientBuilder,
                             ChatMemory chatMemory) {
         this.chatClient = chatClientBuilder
                 .defaultAdvisors(
-                        PromptChatMemoryAdvisor.builder(chatMemory).build(),
+                        MessageChatMemoryAdvisor.builder(chatMemory).build(),
                         new SimpleLoggerAdvisor())
                 .build();
     }
@@ -44,6 +46,7 @@ public class PersonController {
 
         var type = new ParameterizedTypeReference<List<Person>>() {};
         return this.chatClient.prompt(pt.create())
+                .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, CONVERSATION_ID))
                 .advisors(StructuredOutputValidationAdvisor.builder()
                         .outputType(type)
                         .build())
@@ -58,6 +61,7 @@ public class PersonController {
                 """);
         Prompt p = pt.create(Map.of("id", id));
         return this.chatClient.prompt(p)
+                .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, CONVERSATION_ID))
                 .advisors(StructuredOutputValidationAdvisor.builder()
                         .outputType(Person.class)
                         .build())

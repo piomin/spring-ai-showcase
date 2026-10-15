@@ -1,10 +1,11 @@
 package pl.piomin.services;
 
 import io.micrometer.observation.ObservationRegistry;
+import org.springframework.ai.tool.ToolCallback;
+import org.springframework.ai.tool.function.FunctionToolCallback;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Description;
 import org.springframework.web.client.RestTemplate;
 import pl.piomin.services.functions.stock.StockRequest;
 import pl.piomin.services.functions.stock.StockResponse;
@@ -15,9 +16,6 @@ import pl.piomin.services.functions.wallet.WalletService;
 import pl.piomin.services.tools.StockTools;
 import pl.piomin.services.tools.WalletTools;
 
-import java.util.function.Function;
-import java.util.function.Supplier;
-
 @SpringBootApplication
 public class SpringAIShowcase {
 
@@ -26,15 +24,19 @@ public class SpringAIShowcase {
     }
 
     @Bean
-    @Description("Number of shares for each company in my portfolio")
-    public Supplier<WalletResponse> numberOfShares(WalletRepository walletRepository) {
-        return new WalletService(walletRepository);
+    public ToolCallback numberOfShares(WalletRepository walletRepository) {
+        return FunctionToolCallback.builder("numberOfShares", new WalletService(walletRepository))
+                .description("Number of shares for each company in my portfolio")
+                .inputType(Void.class)
+                .build();
     }
 
     @Bean
-    @Description("Latest stock prices")
-    public Function<StockRequest, StockResponse> latestStockPrices() {
-        return new StockService(restTemplate());
+    public ToolCallback latestStockPrices() {
+        return FunctionToolCallback.builder("latestStockPrices", new StockService(restTemplate()))
+                .description("Latest stock prices")
+                .inputType(StockRequest.class)
+                .build();
     }
 
     @Bean
