@@ -2,20 +2,22 @@ package pl.piomin.services.controller;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.test.web.servlet.client.RestTestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureRestTestClient
 class ImageControllerTest {
 
     @Autowired
-    private WebTestClient webTestClient;
+    private RestTestClient restTestClient;
 
 //    @Test
     void testDescribe() {
-        String[] body = webTestClient.get()
+        String[] body = restTestClient.get()
                 .uri("/images/describe")
                 .exchange()
                 .expectStatus().is2xxSuccessful()
@@ -29,7 +31,7 @@ class ImageControllerTest {
     void testDescribeImage() {
         // Use a known image id or fallback to a sample (e.g., "fruits")
         String imageId = "fruits";
-        webTestClient.get()
+        restTestClient.get()
                 .uri("/images/describe/" + imageId)
                 .exchange()
                 .expectStatus().is2xxSuccessful()
@@ -40,7 +42,7 @@ class ImageControllerTest {
 //    @Test
     void testFindObject() {
         String object = "apple";
-        byte[] body = webTestClient.get()
+        byte[] body = restTestClient.get()
                 .uri("/images/find/" + object)
                 .exchange()
                 .expectStatus().is2xxSuccessful()
