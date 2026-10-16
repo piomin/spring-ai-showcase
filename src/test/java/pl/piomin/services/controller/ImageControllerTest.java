@@ -2,55 +2,79 @@ package pl.piomin.services.controller;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.client.RestTestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureRestTestClient
 class ImageControllerTest {
 
     @Autowired
-    private TestRestTemplate restTemplate;
+    private RestTestClient restTestClient;
 
 //    @Test
     void testDescribe() {
-        ResponseEntity<String[]> response = restTemplate.getForEntity("/images/describe", String[].class);
-        assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
-        assertThat(response.getBody()).isNotNull();
+        String[] body = restTestClient.get()
+                .uri("/images/describe")
+                .exchange()
+                .expectStatus().is2xxSuccessful()
+                .expectBody(String[].class)
+                .returnResult()
+                .getResponseBody();
+        assertThat(body).isNotNull();
     }
 
     @Test
     void testDescribeImage() {
         // Use a known image id or fallback to a sample (e.g., "fruits")
         String imageId = "fruits";
-        ResponseEntity<String> response = restTemplate.getForEntity("/images/describe/" + imageId, String.class);
-        assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
-        assertThat(response.getBody()).isNotNull();
+        restTestClient.get()
+                .uri("/images/describe/" + imageId)
+                .exchange()
+                .expectStatus().is2xxSuccessful()
+                .expectBody(String.class)
+                .value(body -> assertThat(body).isNotNull());
     }
 
 //    @Test
     void testFindObject() {
         String object = "apple";
-        ResponseEntity<byte[]> response = restTemplate.getForEntity("/images/find/" + object, byte[].class);
-        assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
-        assertThat(response.getBody()).isNotNull();
+        byte[] body = restTestClient.get()
+                .uri("/images/find/" + object)
+                .exchange()
+                .expectStatus().is2xxSuccessful()
+                .expectBody(byte[].class)
+                .returnResult()
+                .getResponseBody();
+        assertThat(body).isNotNull();
     }
 
 //    @Test
 //    void testGenerateImage() {
 //        String object = "banana";
-//        ResponseEntity<byte[]> response = restTemplate.getForEntity("/images/generate/" + object, byte[].class);
-//        assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
-//        assertThat(response.getBody()).isNotNull();
+//        byte[] body = webTestClient.get()
+//                .uri("/images/generate/" + object)
+//                .exchange()
+//                .expectStatus().is2xxSuccessful()
+//                .expectBody(byte[].class)
+//                .returnResult()
+//                .getResponseBody();
+//        assertThat(body).isNotNull();
 //    }
 
 //    @Test
 //    void testGenerateAndMatch() {
 //        String object = "orange";
-//        ResponseEntity<String> response = restTemplate.getForEntity("/images/generate-and-match/" + object, String.class);
-//        assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
-//        assertThat(response.getBody()).isNotNull();
+//        String body = webTestClient.get()
+//                .uri("/images/generate-and-match/" + object)
+//                .exchange()
+//                .expectStatus().is2xxSuccessful()
+//                .expectBody(String.class)
+//                .returnResult()
+//                .getResponseBody();
+//        assertThat(body).isNotNull();
 //    }
 }
